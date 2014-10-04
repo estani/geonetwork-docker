@@ -24,7 +24,24 @@ RUN mkdir /geonetwork && \
 ADD install.xml /geonetwork/install.xml
 RUN cd /geonetwork && java -jar installer.jar install.xml
 RUN rm /geonetwork/installer.jar
-ADD start.sh /start.sh
 
-EXPOSE 8080 8079
+#setting up the node
+RUN rm -r /geonetwork/node/jetty/logs && \
+    ln -s /logs /geonetwork/node/jetty/logs
+
+#experimenting with xinet.d
+RUN apt-get -y install xinetd && \
+    echo "container\t10101/tcp" >>/etc/services 
+
+ADD container /etc/xinetd.d/container
+ADD controller /container/controller
+ADD start /container/controller.d/start
+ADD stop /container/controller.d/stop
+ADD boot /container/boot
+
+ENV CONTAINER_DATA /container_data
+
+#8080  main web server
+#10101 container controller
+EXPOSE 8080 10101
 

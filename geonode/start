@@ -1,0 +1,25 @@
+#!/bin/bash
+
+cd /geonetwork/node/jetty
+container_dir=${CONTAINER_DATA:-/container_data}
+
+data_dir=/$container_dir/data/geonetwork_data
+lucene_dir=/$container_dir/data/lucene
+logs_dir=/$container_dir/logs
+socket_dir=/$container_dir/run/socket
+
+rm -r logs
+ln -s $logs_dir logs
+
+
+(mkdir -p $data_dir
+mkdir -p $lucene_dir
+mkdir -p $logs_dir
+mkdir -p $socket_dir ) 2>/dev/null
+
+exec 2>&1 >$logs_dir/container.out
+
+echo "Starting Geonetwork"
+java -Xms48m -Xmx512m -Xss2M -XX:MaxPermSize=200m -Dgeonetwork.dir="$data_dir" -Dgeonetwork.lucene.dir="$lucene_dir" -Djeeves.filecharsetdetectandconvert=enabled -Dmime-mappings=../web/geonetwork/WEB-INF/mime-types.properties -DSTOP.PORT=8079 -Djava.awt.headless=true -DSTOP.KEY=geonetwork -jar start.jar >$logs_dir/jetty.out 2>/$logs_dir/jetty.err
+
+echo "Geonetwork was stopped"

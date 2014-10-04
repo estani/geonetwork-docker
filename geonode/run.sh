@@ -13,14 +13,12 @@ EOF
 }
 
 #defaults
-log_dir=/tmp/$image/logs
-data_dir=/tmp/data
+container_dir=/tmp/$image
 
 #OPTIONS START
-while getopts 'hdiD:l:' opt; do
+while getopts 'hdic:' opt; do
     case "$opt" in
-        D) data_dir="$OPTARG";; #defines dir for data
-        l) log_dir="$OPTARG";;  #defines dir for logs
+        c) container_dir="$OPTARG";;   #defines the directory for the container files
         d) debug=1;;            #turns debugging on
         i) interactive=1;;      #starts a shell in the container
         h) usage; exit 0;;      #shows this help
@@ -29,17 +27,15 @@ while getopts 'hdiD:l:' opt; do
 done
 #OPTIONS END
 
-[[ -d "$data_dir" ]] || { echo "data dir '$data_dir' is missing."; usage; exit 1; }
-[[ -d "$log_dir" ]] || mkdir -p "$log_dir"
+[[ -d "$container_dir" ]] || mkdir -p "$container_dir"
 
 
 ((debug)) && cat <<EOF
-data_dir=$data_dir
-log_dir=$log_dir
+container_dir=$container_dir
 EOF
 
 if ((interactive)); then
-    docker run -ti --rm -v "$data_dir:/data" -v "$log_dir:/logs" $image /bin/bash
+    docker run -ti --rm -v "$container_dir:/container_data" $image /bin/bash
 else
-    docker run -d -v "$data_dir:/data" -v "$log_dir:/logs" $image /start.sh
+    docker run -d -v "$container_dir:/container_data" $image /container/boot
 fi
