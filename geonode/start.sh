@@ -12,4 +12,4 @@ lucene_dir=/data/lucene
 (mkdir -p /data_dir
 mkdir -p /lucene_dir) 2>/dev/null
 
-java -Xms48m -Xmx512m -Xss2M -XX:MaxPermSize=128m -Dgeonetwork.dir="$data_dir" -Dgeonetwork.lucene.dir="$lucene_dir" -Djeeves.filecharsetdetectandconvert=enabled -Dmime-mappings=../web/geonetwork/WEB-INF/mime-types.properties -DSTOP.PORT=8079 -Djava.awt.headless=true -DSTOP.KEY=geonetwork -jar start.jar
+java -Xms48m -Xmx512m -Xss2M -XX:MaxPermSize=200m -Dgeonetwork.dir="$data_dir" -Dgeonetwork.lucene.dir="$lucene_dir" -Djeeves.filecharsetdetectandconvert=enabled -Dmime-mappings=../web/geonetwork/WEB-INF/mime-types.properties -DSTOP.PORT=8079 -Djava.awt.headless=true -DSTOP.KEY=geonetwork -jar start.jar
