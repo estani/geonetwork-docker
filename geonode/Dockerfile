@@ -33,11 +33,11 @@ RUN rm -r /geonetwork/node/jetty/logs && \
 RUN apt-get -y install xinetd && \
     echo "container\t10101/tcp" >>/etc/services 
 
-ADD container /etc/xinetd.d/container
-ADD controller /container/controller
-ADD start /container/controller.d/start
-ADD stop /container/controller.d/stop
-ADD boot /container/boot
+ADD xinetd.d/container /etc/xinetd.d/container
+ADD container/controller /container/controller
+ADD container/controller.d/start /container/controller.d/start
+ADD container/controller.d/stop /container/controller.d/stop
+ADD container/boot /container/boot
 
 ENV CONTAINER_DATA /container_data
 

@@ -5,12 +5,12 @@ export CONTAINER_DATA=/container_data
 
 while read input; do
     if [[ -f "${script_dir}/${input}" ]]; then
-        cmd=$"{script_dir}/${input}"
+        cmd="${script_dir}/${input}"
         #call the command directly
-        echo "running found command $input"
-        "${script_dir}/${input}"
+        echo "Found command $input, calling script $cmd"
+        $cmd
     else
-       echo "${input} not found."
+       echo "Command ${input} not found."
     fi
 done
 

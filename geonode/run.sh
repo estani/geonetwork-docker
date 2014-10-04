@@ -37,5 +37,8 @@ EOF
 if ((interactive)); then
     docker run -ti --rm -v "$container_dir:/container_data" $image /bin/bash
 else
-    docker run -d -v "$container_dir:/container_data" $image /container/boot
+    container="$(docker run -d -v "$container_dir:/container_data" $image /container/boot)"
+    mkdir -p "$container_dir/var/run"
+    echo "$container" > "$container_dir/var/run/container.name"
+    echo "Container $container started with share dir: $container_dir" >&2
 fi
