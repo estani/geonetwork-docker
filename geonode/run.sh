@@ -16,11 +16,12 @@ EOF
 container_dir=/tmp/$image
 
 #OPTIONS START
-while getopts 'hdic:' opt; do
+while getopts 'hdic:w' opt; do
     case "$opt" in
         c) container_dir="$OPTARG";;   #defines the directory for the container files
         d) debug=1;;            #turns debugging on
         i) interactive=1;;      #starts a shell in the container
+        w) web=1;;              #opens web port (80)
         h) usage; exit 0;;      #shows this help
         *) echo "Unknown option $opt"; usage; exit 1;;
     esac
@@ -37,7 +38,8 @@ EOF
 if ((interactive)); then
     docker run -ti --rm -v "$container_dir:/container_data" $image /bin/bash
 else
-    container="$(docker run -d -v "$container_dir:/container_data" $image /container/boot)"
+    ((web)) && docker_opt="$docker_opt -p 80:8080"
+    container="$(docker run -d $docker_opt -v "$container_dir:/container_data" $image /container/boot)"
     mkdir -p "$container_dir/var/run"
     echo "$container" > "$container_dir/var/run/container.name"
     echo "Container $container started with share dir: $container_dir" >&2
