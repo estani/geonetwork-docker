@@ -1,0 +1,4 @@
+#!/bin/bash
+
+echo "No stop script defined"
+exit 1

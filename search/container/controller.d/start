@@ -1,0 +1,6 @@
+#!/bin/bash
+
+cmd=elasticsearch-1.3.4/bin/elasticsearch
+
+echo "Starting elastic search"
+$cmd

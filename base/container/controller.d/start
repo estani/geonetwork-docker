@@ -1,0 +1,4 @@
+#!/bin/bash
+
+echo "No start script defined"
+exit 1
