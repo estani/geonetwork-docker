@@ -1,11 +1,5 @@
 #!/bin/bash
+pid_file=/container_data/var/run/elasticsearch.pid
+echo "Stopping elastic search"
 
-exec 2>&1 >>"$CONTAINER_DATA/logs/container.out"
-
-echo "shutting down jetty"
-
-cd /geonetwork/node/jetty
-export JETTY_HOME=.
-java -DSTOP.PORT=8079 -DSTOP.KEY=geonetwork -jar start.jar --stop
-
-echo "shutdown mssage sent"
+kill $(cat "$pid_file")

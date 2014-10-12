@@ -1,4 +1,4 @@
 #!/bin/echo source from bash
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-docker_opt="-v $SCRIPT_DIR:/config:ro"
+docker_opt="-v $SCRIPT_DIR/config:/elasticsearch/config:ro"

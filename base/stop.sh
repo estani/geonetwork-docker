@@ -12,9 +12,11 @@ container_dir=/tmp/$image
 while getopts "c:C:" opt; do
     case "$opt" in
         c) container_dir="$OPTARG";;    #defines the directory for the container files
-        C) container_name="$OPTARG";;   #defines the container name
     esac
 done
+shift $((OPTIND-1))
+[[ "$1" ]] && container_name="$1"
+
 [[ -z "$container_name" && "$container_dir" ]] && container_name="$(cat "$container_dir/var/run/container.name")"
 
 ip=$(get_container_ip $container_name)

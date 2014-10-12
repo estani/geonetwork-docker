@@ -19,16 +19,16 @@ ENV JAVA_HOME /opt/java/jdk1.7.0_67
 
 #install elasticsearch
 RUN curl https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-1.3.4.tar.gz | tar xzv
-
+RUN mv /elasticsearch-1.3.4 /elasticsearch
 
 #experimenting with xinet.d
-#RUN apt-get -y install xinetd && \
-#    echo "container\t10101/tcp" >>/etc/services 
+RUN apt-get -y install xinetd && \
+    echo "container\t10101/tcp" >>/etc/services 
 
-#ADD xinetd.d/container /etc/xinetd.d/container
-#ADD container/controller /container/controller
-#ADD container/controller.d/start /container/controller.d/start
-#ADD container/controller.d/stop /container/controller.d/stop
+ADD xinetd.d/container /etc/xinetd.d/container
+ADD container/controller /container/controller
+ADD container/controller.d/start /container/controller.d/start
+ADD container/controller.d/stop /container/controller.d/stop
 ADD container/boot /container/boot
 
 #ENV CONTAINER_DATA /container_data
@@ -36,7 +36,7 @@ ADD container/boot /container/boot
 #9200  elastic search
 #9300  elastic search
 #10101 container controller
-EXPOSE 9200 9300
+EXPOSE 9200 9300 10101
 
 #setting up the node
-ENV CONF_DIR /config
+#ENV CONF_DIR /config # not working wihtout the initd script, cannot find it..
