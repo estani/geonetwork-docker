@@ -20,9 +20,6 @@ ENV JAVA_HOME /opt/java/jdk1.7.0_67
 #install elasticsearch
 RUN curl https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-1.3.4.tar.gz | tar xzv
 
-#setting up the node
-#RUN rm -r /geonetwork/node/jetty/logs && \
-#    ln -s /logs /geonetwork/node/jetty/logs
 
 #experimenting with xinet.d
 #RUN apt-get -y install xinetd && \
@@ -32,7 +29,7 @@ RUN curl https://download.elasticsearch.org/elasticsearch/elasticsearch/elastics
 #ADD container/controller /container/controller
 #ADD container/controller.d/start /container/controller.d/start
 #ADD container/controller.d/stop /container/controller.d/stop
-#ADD container/boot /container/boot
+ADD container/boot /container/boot
 
 #ENV CONTAINER_DATA /container_data
 
@@ -41,3 +38,5 @@ RUN curl https://download.elasticsearch.org/elasticsearch/elasticsearch/elastics
 #10101 container controller
 EXPOSE 9200 9300
 
+#setting up the node
+ENV CONF_DIR /config

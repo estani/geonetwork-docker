@@ -29,6 +29,9 @@ while getopts 'hdic:wn:' opt; do
 done
 #OPTIONS END
 
+#check extra files
+[[ -f extra_env ]] && . extra_env
+
 [[ -d "$container_dir" ]] || mkdir -p "$container_dir"
 
 
@@ -39,7 +42,7 @@ EOF
 if ((interactive)); then
     docker run -ti --rm -v "$container_dir:/container_data" $image /bin/bash
 else
-    ((name)) && docker_opt="$docker_opt --name $name"
+    [[ "$name" ]] && docker_opt="$docker_opt --name $name"
     ((web)) && docker_opt="$docker_opt -p 80:8080"
     container="$(docker run -d $docker_opt -v "$container_dir:/container_data" $image /container/boot)"
     mkdir -p "$container_dir/var/run"
