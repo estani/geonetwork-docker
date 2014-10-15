@@ -8,10 +8,10 @@ get_ip() {
 
 #defaults
 container_dir=/tmp/$image
-while getopts "c:C:" opt; do
+while getopts "c:n:" opt; do
     case "$opt" in
         c) container_dir="$OPTARG";;    #defines the directory for the container files
-        C) container_name="$OPTARG";;   #defines the container name
+        n) container_name="$OPTARG";;   #defines the container name
     esac
 done
 shift $((OPTIND-1))

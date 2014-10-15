@@ -3,15 +3,29 @@
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 image="$(basename $SCRIPT_DIR)"
 
+usage() {
+    cat<<EOF
+Usage: $0 [options] [container_name] 
+
+Either define the container name or pass the shrade directory of this container.
+
+options:
+$(sed -n '/^#OPTIONS START/,/#OPTIONS END/ {s/ *\([^)]\+\))[^#]\+#\(.*\)/\1\t: \2/p}' $0)
+EOF
+}
+
 get_container_ip () {
+    $(dirname $SCRIPT_DIR)
     docker inspect --format '{{.NetworkSettings.IPAddress}}' $1
 }
 
 #defaults
 container_dir=/tmp/$image
-while getopts "c:C:" opt; do
+while getopts "c:" opt; do
     case "$opt" in
         c) container_dir="$OPTARG";;    #defines the directory for the container files
+        h) usage; exit 0;;              #this help
+        *) echo "Unknown command $opt"; exit 1;;
     esac
 done
 shift $((OPTIND-1))
