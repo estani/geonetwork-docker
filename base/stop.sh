@@ -15,8 +15,7 @@ EOF
 }
 
 get_container_ip () {
-    $(dirname $SCRIPT_DIR)
-    docker inspect --format '{{.NetworkSettings.IPAddress}}' $1
+    $SCRIPT_DIR/info -n $1 ip
 }
 
 #defaults
@@ -34,6 +33,10 @@ shift $((OPTIND-1))
 [[ -z "$container_name" && "$container_dir" ]] && container_name="$(cat "$container_dir/var/run/container.name")"
 
 ip=$(get_container_ip $container_name)
-port=10101
-
-nc $ip $port <<<'stop'
+if [[ "$ip" ]]; then
+    echo "Stopping $container_name at $ip"
+    port=10101
+    nc $ip $port <<<'stop'
+else
+    echo "$container_name doesn't seem to be running"
+fi
