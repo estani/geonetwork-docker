@@ -26,7 +26,7 @@ RUN curl ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf-4/hdf5-1.8.13.tar.gz | tar
 
 #LD_LIBRARY_PATH
 #install
-RUN curl ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf-4.3.2.tar.gz | tar xz && \
+#RUN curl ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf-4.3.2.tar.gz | tar xz && \
     
 #setting up the node
 #RUN rm -r /geonetwork/node/jetty/logs && \
