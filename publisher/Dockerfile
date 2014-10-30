@@ -45,16 +45,16 @@ RUN apt-get install -y python python-dev
 RUN curl https://bootstrap.pypa.io/get-pip.py | python
 RUN pip install numpy
 
-
+#netcdf4 python
 RUN git clone https://github.com/Unidata/netcdf4-python.git && \
     cd netcdf4-python && \
     cp setup.cfg.template setup.cfg && \
     python setup.py build && \
     python setup.py install
 
-#settine node
-#RUN -r /geonetwork/node/jetty/logs && \
-#    ln -s /logs /geonetwork/node/jetty/logs
+#prepare the scripts
+ADD scripts/to_json.py /scripts/to_json.py
+ADD scripts/to_geonetwork.py /scripts/to_geonetwork.py
 
 #experimenting with xinet.d
 #RUN apt-get -y install xinetd && \

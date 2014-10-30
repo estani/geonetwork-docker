@@ -13,14 +13,13 @@ EOF
 }
 
 #OPTIONS START
-while getopts 'hdic:wn:' opt; do
+while getopts 'hdip:D:' opt; do
     case "$opt" in
-        c) container_dir="$OPTARG";;    #defines the directory for the container files
-        n) name="$OPTARG";;             #name the container
-        d) debug=1;;            #turns debugging on
-        i) interactive=1;;      #starts a shell in the container
-        w) web=1;;              #opens web port (80)
-        h) usage; exit 0;;      #shows this help
+        d) debug=1;;            	#turns debugging on
+        i) interactive=1;;      	#starts a shell in the container
+        p) script="$OPTARG";;   	#runs python script
+	D) dirs="$dirs $OPTARG";;		#directories to share
+        h) usage; exit 0;;      	#shows this help
         *) echo "Unknown option $opt"; usage; exit 1;;
     esac
 done
@@ -29,28 +28,16 @@ done
 #check extra files
 [[ -f extra_env ]] && . extra_env
 
-#adds extra info
-[[ "$name" ]] && docker_opt="$docker_opt --name $name"
-((web)) && docker_opt="$docker_opt -p 80:8080"
-
-#setups local dir for container
-if [[ -z "$container_dir" ]]; then 
-    if [[ "$name" ]]; then 
-        container_dir=/tmp/$name
-    else 
-        container_dir=/tmp/$image
-    fi
-fi
-[[ -d "$container_dir" ]] || mkdir -p "$container_dir"
-
 
 ((debug)) && cat <<EOF
-name=$name
-container_dir=$container_dir
+script=$script
+dirs=$dirs
 EOF
 
+
+
 if ((interactive)); then
-    docker run -ti --rm -v "$container_dir:/container_data" $image /bin/bash
+    docker run -ti --rm $image /bin/bash
 else
     container="$(docker run -d $docker_opt -v "$container_dir:/container_data" $image /container/boot)"
     mkdir -p "$container_dir/var/run"
