@@ -30,6 +30,7 @@ RUN curl ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf-4/zlib-1.2.8.tar.gz | tar 
     make && \
     make install
 
+#Netcdf4-c
 RUN export CPPFLAGS=-I/hdf5-1.8.13/hdf5/include \
     LDFLAGS=-L/hdf5-1.8.13/hdf5/lib \
     LD_LIBRARY_PATH=/hdf5-1.8.13/hdf5/lib && \
@@ -39,7 +40,18 @@ RUN export CPPFLAGS=-I/hdf5-1.8.13/hdf5/include \
     make && \
     make install
 
-    
+#python & co
+RUN apt-get install -y python python-dev
+RUN curl https://bootstrap.pypa.io/get-pip.py | python
+RUN pip install numpy
+
+
+RUN git clone https://github.com/Unidata/netcdf4-python.git && \
+    cd netcdf4-python && \
+    cp setup.cfg.template setup.cfg && \
+    python setup.py build && \
+    python setup.py install
+
 #settine node
 #RUN -r /geonetwork/node/jetty/logs && \
 #    ln -s /logs /geonetwork/node/jetty/logs
