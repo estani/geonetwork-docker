@@ -1,0 +1,12 @@
+# default: on
+# description: Hello World socket server
+service container
+{
+   port            = 10101
+   socket_type     = stream
+   wait            = no
+   user            = root
+   server          = /container/controller
+   disable         = no
+}
+

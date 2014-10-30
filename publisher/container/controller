@@ -1,0 +1,18 @@
+#!/bin/bash
+
+script_dir=/container/controller.d
+export CONTAINER_DATA=/container_data
+
+while read input; do
+    if [[ -f "${script_dir}/${input}" ]]; then
+        cmd="${script_dir}/${input}"
+        #call the command directly
+        echo "Found command $input, calling script $cmd"
+        $cmd
+    else
+       echo "Command ${input} not found."
+    fi
+done
+
+
+
