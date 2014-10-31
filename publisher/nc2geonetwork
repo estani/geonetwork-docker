@@ -1,0 +1,7 @@
+#!/bin/bash
+
+path="$1"
+file="$(basename "$path")"
+basedir="$( cd "$(dirname "$path")"; pwd)"
+
+docker run --rm -v "$basedir:/data" publisher /scripts/to_geonetwork.py "/data/$file"
