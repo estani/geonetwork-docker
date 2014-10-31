@@ -12,7 +12,7 @@ def get_metadata(filename):
     with Dataset(filename, 'r') as f:
         #meta['global'] = {}
         for g_att in f.ncattrs():
-            meta[g_att] = getattr(f, g_att)
+            meta[str(g_att)] = getattr(f, g_att)
     return meta
 
 def main(args=sys.argv):
