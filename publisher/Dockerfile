@@ -52,6 +52,9 @@ RUN git clone https://github.com/Unidata/netcdf4-python.git && \
     python setup.py build && \
     python setup.py install
 
+#connection to elasticseearch
+RUN pip install elasticsearch
+
 #prepare the scripts
 ADD scripts/to_json.py /scripts/to_json.py
 ADD scripts/to_geonetwork.py /scripts/to_geonetwork.py

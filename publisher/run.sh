@@ -12,14 +12,20 @@ $(sed -n '/^#OPTIONS START/,/#OPTIONS END/ {s/ *\([^)]\+\))[^#]\+#\(.*\)/\1\t: \
 EOF
 }
 
+fullpath() {
+    local path="$1"
+    echo "$(cd $(dirname "$path"); pwd)/$(basename "$path")"
+}
+
 #OPTIONS START
-while getopts 'hdip:D:' opt; do
+while getopts 'hdip:D:s:' opt; do
     case "$opt" in
-        d) debug=1;;            	#turns debugging on
-        i) interactive=1;;      	#starts a shell in the container
-        p) script="$OPTARG";;   	#runs python script
-	D) dirs="$dirs $OPTARG";;		#directories to share
-        h) usage; exit 0;;      	#shows this help
+        s) search="$OPTARG";;               #pass an elastic search container
+        d) debug=1;;                        #turns debugging on
+        i) interactive=1;;                  #starts a shell in the container
+        p) script="$OPTARG";;               #runs python script
+        D) data="$(fullpath "$OPTARG")";;   #data dir being shared
+        h) usage; exit 0;;                  #shows this help
         *) echo "Unknown option $opt"; usage; exit 1;;
     esac
 done
@@ -35,11 +41,12 @@ dirs=$dirs
 EOF
 
 
-
+[[ "$search" ]] && options="$options --link $search:es"
+[[ "$data" ]] && options="$options -v $data:/data"
 if ((interactive)); then
-    docker run -ti --rm $image /bin/bash
+    docker run -ti --rm $options $image /bin/bash
 else
-    container="$(docker run -d $docker_opt -v "$container_dir:/container_data" $image /container/boot)"
+    container="$(docker run -d $docker_opt $options -v "$container_dir:/container_data" $image /container/boot)"
     mkdir -p "$container_dir/var/run"
     echo "$container" > "$container_dir/var/run/container.name"
     echo "Container $container started with share dir: $container_dir" >&2
