@@ -4,4 +4,6 @@ path="$1"
 file="$(basename "$path")"
 basedir="$( cd "$(dirname "$path")"; pwd)"
 
-docker run --rm -v "$basedir:/data" publisher /scripts/to_json.py "/data/$file"
+#TODO user run.sh
+docker run --rm -v "$basedir:/data" -e "DATA_PATH=$basedir" publisher /scripts/to_json.py --show "/data/$file"
+

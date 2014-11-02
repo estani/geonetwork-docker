@@ -42,7 +42,7 @@ EOF
 
 
 [[ "$search" ]] && options="$options --link $search:es"
-[[ "$data" ]] && options="$options -v $data:/data"
+[[ "$data" ]] && options="$options -v $data:/data:ro -e DATA_PATH=$data"
 if ((interactive)); then
     docker run -ti --rm $options $image /bin/bash
 else
