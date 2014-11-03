@@ -1,9 +1,11 @@
 #!/bin/bash
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+source $SCRIPT_DIR/helper.sh
 
-path="$1"
-file="$(basename "$path")"
-basedir="$( cd "$(dirname "$path")"; pwd)"
-
-#TODO user run.sh
-docker run --rm -v "$basedir:/data" -e "DATA_PATH=$basedir" publisher /scripts/to_json.py --show "/data/$file"
-
+path="$(fullpath "$1")"
+if [[ -f "$path" ]]; then
+    $SCRIPT_DIR/run -p to_json.py -f "$path" -- --show --dry-run
+else
+    #crawling sstill not implemented
+    $SCRIPT_DIR/run -p to_json.py -D "$path" -- --show --dry-run
+fi

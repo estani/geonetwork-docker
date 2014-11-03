@@ -1,0 +1,23 @@
+#!/bin/bash
+# Description: Extracts the metadata from an nc file and sends it to elastic search
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+source $SCRIPT_DIR/helper.sh
+
+#OPTIONS START
+while getopts 'n:h' OPT; do
+    case "$OPT" in
+        n) container="$OPTARG";;    #docker container name where elastic search is running
+        h) usage; exit 0;;          #this help
+        *) echo "Unknown option $OPT"; usage; exit 1;;
+    esac
+done
+shift $((OPTIND-1))
+#OPTIONS END
+
+path="$(fullpath "$1")"
+if [[ -f "$path" ]]; then
+    $SCRIPT_DIR/run -s "$container" -p to_json.py -f "$path"
+else
+    #crawling sstill not implemented
+    $SCRIPT_DIR/run -s "$container" -p to_json.py -D "$path"
+fi

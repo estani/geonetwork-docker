@@ -1,0 +1,55 @@
+#!/bin/bash
+#Description: basic run script for starting the container
+
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+source $SCRIPT_DIR/helper.sh
+
+image="$(basename $SCRIPT_DIR)"
+
+fullpath2() {
+    local path="$1"
+    if [[ -d "$path" ]]; then
+        echo "$(cd "$path"; pwd)"
+    else
+        echo "$(cd $(dirname "$path"); pwd)/$(basename "$path")"
+    fi
+}
+
+pass=()
+#OPTIONS START
+while getopts 'hdip:D:f:s:' opt; do
+    case "$opt" in
+        s) search="$OPTARG";;               #pass an elastic search container
+        d) debug=1;;                        #turns debugging on
+        i) interactive=1;;                  #starts a shell in the container
+        p) script="$OPTARG";;               #runs python script
+        D) data="$(fullpath "$OPTARG")";;   #data dir being crawled
+        f) file="$(fullpath "$OPTARG")";;   #file bein ingested
+        h) usage; exit 0;;                  #shows this help
+        *) echo "Unknown option $opt"; usage; exit 1;;
+    esac
+done
+shift $((OPTIND-1))
+#OPTIONS END
+
+
+((debug)) && cat <<EOF
+script=$script
+dirs=$dirs
+EOF
+
+
+[[ "$search" ]] && options="$options --link $search:es"
+if [[ "$file" ]]; then
+    [[ "$data" ]] && echo "cannot define data and file at the same time" && exit 1
+    data="$(dirname "$file")"
+fi
+[[ "$data" ]] &&  options="$options -v $data:/data:ro -e DATA_PATH=$data"
+
+if ((interactive)); then
+    docker run -ti --rm $options $image /bin/bash
+else
+    [[ ! -f "$SCRIPT_DIR/scripts/$script" ]] && echo "Script $script not found \(set with -p\)" && exit 1
+
+    docker run --rm $docker_opt $options $image /scripts/$script "$@" "$([[ "$file" ]] && echo "/data/$(basename "$file")")"
+fi

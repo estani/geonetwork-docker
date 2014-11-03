@@ -1,7 +1,0 @@
-#!/bin/bash
-
-echo "Starting xinetd"
-/etc/init.d/xinetd start
-
-#init app
-echo start | /container/controller
