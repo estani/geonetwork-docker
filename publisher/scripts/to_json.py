@@ -3,6 +3,7 @@
 from netCDF4 import Dataset
 import sys, os, datetime
 import json
+import logging
 
 import es_api
 
@@ -83,7 +84,10 @@ class NetCDFFileHandler(object):
                             skip = True
                             break
                 if not skip:
-                    yield self.get_metadata(current)
+                    try:
+                        yield self.get_metadata(current)
+                    except Exception as e:
+                        logging.log(logging.ERROR, "Could not process %s (%s)" % (f, e)) 
 
     def get_metadata(self, filename):
         meta = self.__extract_from_filename(filename)
@@ -112,7 +116,8 @@ def main(args=sys.argv[1:]):
     parser.add_argument('--show', action='store_true', help='show produced json')
     parser.add_argument('--dry-run', action='store_true', help="Don't publish anything")
     parser.add_argument('--dir-structure', help='Metadata directory structure (e.g. /*/institute/model/realm so /a/b/c/d/e -> institute=b, model=c,realm=d) ')
-    parser.add_argument('--exclude-crawl', help='Exclude the given regular expression')
+    parser.add_argument('--exclude-crawl', help='Exclude the given regular expression while crawling')
+    parser.add_argument('--include-crawl', help='Include only the given regular expression while  crawling')
     pargs = parser.parse_args(args)
 
     #handle input properly
@@ -123,14 +128,18 @@ def main(args=sys.argv[1:]):
     handler = NetCDFFileHandler(path_parser=path_parser)
 
     exclude = []
+    include = None
     if pargs.exclude_crawl:
         import re
         exclude.append(re.compile(pargs.exclude_crawl))
+    if pargs.include_crawl:
+        import re
+        include = [re.compile(pargs.include_crawl)]
 
     es = es_api.ES()
     for filename in pargs.files:
         if os.path.isdir(filename):
-            for file_meta in handler.crawl_dir(filename, exclude=exclude):
+            for file_meta in handler.crawl_dir(filename, exclude=exclude, include=include):
                 process(file_meta, es, show=pargs.show, dry_run=pargs.dry_run)
         elif os.path.isfile(filename):
             file_meta = handler.get_metadata(filename)

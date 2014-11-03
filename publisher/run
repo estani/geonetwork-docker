@@ -17,15 +17,18 @@ fullpath2() {
 
 pass=()
 #OPTIONS START
-while getopts 'hdip:D:f:s:' opt; do
+while getopts 'hdip:P:D:f:s:E:I:' opt; do
     case "$opt" in
         s) search="$OPTARG";;               #pass an elastic search container
         d) debug=1;;                        #turns debugging on
         i) interactive=1;;                  #starts a shell in the container
         p) script="$OPTARG";;               #runs python script
+        P) params="$OPTARG";;               #pass the following params
         D) data="$(fullpath "$OPTARG")";;   #data dir being crawled
         f) file="$(fullpath "$OPTARG")";;   #file bein ingested
         h) usage; exit 0;;                  #shows this help
+        E) exclude="$OPTARG";;              #while crawling excludes files which full path matches this regular expression      
+        I) include="$OPTARG";;              #while crawling include only files which full path matches this reg exp
         *) echo "Unknown option $opt"; usage; exit 1;;
     esac
 done
@@ -43,13 +46,20 @@ EOF
 if [[ "$file" ]]; then
     [[ "$data" ]] && echo "cannot define data and file at the same time" && exit 1
     data="$(dirname "$file")"
+    target="/data/$(basename "$file")"
 fi
-[[ "$data" ]] &&  options="$options -v $data:/data:ro -e DATA_PATH=$data"
+if [[ "$data" ]]; then
+   options="$options -v $data:/data:ro -e DATA_PATH=$data"
+   [[ -z "$target" ]] && target=/data
+fi
+
+[[ "$include" ]] && params="$params --include-crawl $include"
+[[ "$exclude" ]] && params="$params --exclude-crawl $exclude"
 
 if ((interactive)); then
-    docker run -ti --rm $options $image /bin/bash
+    docker run -ti --rm $options $image /bin/bash $params
 else
     [[ ! -f "$SCRIPT_DIR/scripts/$script" ]] && echo "Script $script not found \(set with -p\)" && exit 1
 
-    docker run --rm $docker_opt $options $image /scripts/$script "$@" "$([[ "$file" ]] && echo "/data/$(basename "$file")")"
+    docker run --rm $docker_opt $options $image /scripts/$script $params "$target"
 fi

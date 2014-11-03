@@ -4,8 +4,8 @@ source $SCRIPT_DIR/helper.sh
 
 path="$(fullpath "$1")"
 if [[ -f "$path" ]]; then
-    $SCRIPT_DIR/run -p to_json.py -f "$path" -- --show --dry-run
+    $SCRIPT_DIR/run -p to_json.py -f "$path" -P "--show --dry-run $@"
 else
     #crawling sstill not implemented
-    $SCRIPT_DIR/run -p to_json.py -D "$path" -- --show --dry-run
+    $SCRIPT_DIR/run -p to_json.py -D "$path" -P "--show --dry-run" "$@"
 fi
