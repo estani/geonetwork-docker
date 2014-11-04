@@ -19,3 +19,4 @@ fullpath() {
         echo "$(cd $(dirname "$path"); pwd)/$(basename "$path")"
     fi
 }
+
