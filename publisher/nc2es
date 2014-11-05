@@ -1,23 +1,42 @@
 #!/bin/bash
-# Description: Extracts the metadata from an nc file and sends it to elastic search
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source $SCRIPT_DIR/helper.sh
 
-#OPTIONS START
-while getopts 'n:h' OPT; do
-    case "$OPT" in
-        n) container="$OPTARG";;    #docker container name where elastic search is running
-        h) usage; exit 0;;          #this help
-        *) echo "Unknown option $OPT"; usage; exit 1;;
+#remove last param
+array=( )
+while [[ "$1" ]]; do
+    case "$1" in
+        -n) container="$2"  #container holding an elastic search for deployment
+            shift 2
+            continue
+            ;;
     esac
+    array+=( "$1" )
+    shift
 done
-shift $((OPTIND-1))
-#OPTIONS END
+last_arg=${array[${#array[@]}-1]}
+unset array[${#array[@]}-1]
 
-path="$(fullpath "$1")"
-if [[ -f "$path" ]]; then
-    $SCRIPT_DIR/run -s "$container" -p to_json.py -f "$path"
+#reset positional parameters to what's left
+set -- "${array[@]}"
+
+#find the root dir and share that with the container
+if [[ -f "$last_arg" ]]; then
+    data="$(dirname "$(fullpath "$last_arg")")"
+    target="/data/$(basename "$(fullpath "$last_arg")")"
+elif [[ -d "$last_arg" ]]; then
+    data="$(fullpath "$last_arg")"
 else
-    #crawling sstill not implemented
-    $SCRIPT_DIR/run -s "$container" -p to_json.py -D "$path"
+    #this is something else...
+    target="$last_arg"
 fi
+
+if [[ "$data" ]]; then
+   options="$options -v $data:/data:ro -e DATA_PATH=$data"
+   [[ -z "$target" ]] && target=/data
+fi
+
+if [[ "$container" ]]; then
+    options="$options --link $container:es"
+fi
+docker run --rm  $options $image /scripts/to_json.py "$@" "$target"

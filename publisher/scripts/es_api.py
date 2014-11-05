@@ -6,8 +6,8 @@ import os
 class ESFactory(object):
     
     @staticmethod
-    def fromDockerEnvironment(port=9200, ssl=False):
-        "port is the elastic search internal port (typically 9200)"
+    def fromDockerEnvironment(port=9200):
+        "Read connection from docker linked container. Port is the elastic search internal port (typically 9200)"
         servers = {}
         for var_name in [var for var in os.environ if ("_PORT_%s_TCP" % port) in var]:
             parts = var_name.split('_')
@@ -18,10 +18,16 @@ class ESFactory(object):
                 server['host'] = os.environ[var_name]
             elif parts[-1] == 'PORT':
                 server['port'] = int(os.environ[var_name])
-            #simple ssl setting for all servers
-            server['use_ssl'] = ssl
         
         return Elasticsearch(servers.values())
+
+    @staticmethod
+    def basicConnector(host, port=9200, url_prefix='', use_ssl=False, timeout=10, **other_options):
+        "Create a simple elastic search connector"
+        options = dict(host=host, port=port, url_prefix=url_prefix, use_ssl=use_ssl, timeout=timeout)
+        options.update(other_options)
+    
+        return Elasticsearch([options])
 
 class ES(object):
     INDEX = 'geonetwork'
@@ -41,4 +47,11 @@ class ES(object):
               
     def publish(self, values):
         "publish the dictionary in values to elastic search"
-        self.es.index(index=ES.INDEX, doc_type=ES.FILE_TYPE, id=self.getId(values), body=values)
+        return self.es.index(index=ES.INDEX, doc_type=ES.FILE_TYPE, id=self.getId(values), body=values)
+
+    def get(self, id):
+        "Get the document for the given id"
+        return self.es.get(index=ES.INDEX, doc_type=ES.FILE_TYPE, id=id)
+
+    def search(self, body, **options):
+        return self.es.search(index=ES.INDEX, doc_type=ES.FILE_TYPE, body=body, **options)

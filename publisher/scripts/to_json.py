@@ -7,27 +7,45 @@ import logging
 
 import es_api
 
-class SimpleDirectoryParser(object):
+class SimplePathParser(object):
     """Simple directory parser strategy that is initialized with a string of the form:
         /*/*/*/model/institute/*/variable
         
         When passed a path like: /data/project1/something/mymodel/ABCD/production/ps
         produces a map: {'model': 'mymodel, 'institute':'ABCD', 'variable':ps}"""
-    DIR_SEP = '/'
     SKIP = '*'
+    
+    @staticmethod
+    def parse_structure(structure, separator):
+        metadict = {}
+        if structure is not None and len(structure) > 0:
+            position = 0
+            for value in structure.split(separator):
+                if len(value) > 0 and value != SimplePathParser.SKIP:
+                    metadict[position] = value
+                position += 1
+        return metadict
 
-    def __init__(self, parsingDescription):
-        position = 0
-        self.metadict = {}
-        for value in parsingDescription.split(SimpleDirectoryParser.DIR_SEP):
-            if value != SimpleDirectoryParser.SKIP:
-                self.metadict[position] = value
-            position += 1
+    def __init__(self, dir_structure='', dir_sep=os.sep, file_structure=None, file_sep='_'):
+        """The separators are used for splitting the directory and file parts. 
+        In the case of directories is only used for parsing the structure, the real separator will be
+        read from the OS."""
+        self.file_sep = file_sep
+        if len(dir_structure) > 0 and dir_structure[0] != '/':
+            dir_structure = '/' + dir_structure 
+        self.dir_metadict = SimplePathParser.parse_structure(dir_structure, dir_sep)
+        self.file_metadict = SimplePathParser.parse_structure(file_structure, file_sep)
 
     def extract(self, path):
-        parts = path.split(os.sep)
         meta = {}
-        for pos, name in self.metadict.items():
+        parts = os.path.dirname(path).split(os.sep)
+        for pos, name in self.dir_metadict.items():
+            meta[name] = parts[pos]
+        
+        parts = os.path.basename(path).split(self.file_sep)
+        if '.' in parts[-1]:
+            parts[-1] = parts[-1][:parts[-1].rfind('.')]
+        for pos, name in self.file_metadict.items():
             meta[name] = parts[pos]
         return meta
             
@@ -107,7 +125,7 @@ def process(meta, elasticsearch, show=True, dry_run=True):
     if show:
         print json.dumps(meta, indent=2)
     if not dry_run:
-        es.publish(meta)
+        elasticsearch.publish(meta)
 
 def main(args=sys.argv[1:]):
     import argparse
@@ -118,11 +136,13 @@ def main(args=sys.argv[1:]):
     parser.add_argument('--dir-structure', help='Metadata directory structure (e.g. /*/institute/model/realm so /a/b/c/d/e -> institute=b, model=c,realm=d) ')
     parser.add_argument('--exclude-crawl', help='Exclude the given regular expression while crawling')
     parser.add_argument('--include-crawl', help='Include only the given regular expression while  crawling')
+    parser.add_argument('-p', '--port', type=int, help='elastic search port (default 9200)', default=9200)
+    parser.add_argument('--host', help='Elastic search host')
     pargs = parser.parse_args(args)
 
     #handle input properly
     if pargs.dir_structure is not None:
-        path_parser = SimpleDirectoryParser(pargs.dir_structure)
+        path_parser = SimplePathParser(pargs.dir_structure)
     else:
         path_parser = None
     handler = NetCDFFileHandler(path_parser=path_parser)
@@ -136,7 +156,11 @@ def main(args=sys.argv[1:]):
         import re
         include = [re.compile(pargs.include_crawl)]
 
-    es = es_api.ES()
+    if pargs.host:
+        es = es_api.ES(es_api.ESFactory.basicConnector(pargs.host, port=pargs.port))
+    else:
+        es = es_api.ES()
+
     for filename in pargs.files:
         if os.path.isdir(filename):
             for file_meta in handler.crawl_dir(filename, exclude=exclude, include=include):
