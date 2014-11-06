@@ -1,0 +1,43 @@
+#!/bin/bash
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+source $SCRIPT_DIR/../helper.sh
+
+#remove last param
+array=( )
+while [[ "$1" ]]; do
+    case "$1" in
+        -n) container="$2"  #container holding an elastic search for deployment
+            shift 2
+            continue
+            ;;
+    esac
+    array+=( "$1" )
+    shift
+done
+last_arg=${array[${#array[@]}-1]}
+unset array[${#array[@]}-1]
+
+#reset positional parameters to what's left
+set -- "${array[@]}"
+
+#find the root dir and share that with the container
+if [[ -f "$last_arg" ]]; then
+    data="$(dirname "$(fullpath "$last_arg")")"
+    target="/data/$(basename "$(fullpath "$last_arg")")"
+elif [[ -d "$last_arg" ]]; then
+    data="$(fullpath "$last_arg")"
+else
+    #this is something else...
+    target="$last_arg"
+fi
+
+if [[ "$data" ]]; then
+   options="$options -v $data:/data:ro -e DATA_PATH=$data"
+   [[ -z "$target" ]] && target=/data
+fi
+
+if [[ "$container" ]]; then
+    options="$options --link $container:es"
+fi
+docker run --rm  $options $image /scripts/query.py "$@" "$target"
+
