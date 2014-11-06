@@ -4,7 +4,7 @@ import sys, os
 import json
 
 from publisher import SimplePathParser, NetCDFFileHandler
-import es_api
+from es_api import ESFactory
 
 def process(meta, elasticsearch, show=True):
     if show:
@@ -23,7 +23,7 @@ def main(args=sys.argv[1:]):
     parser.add_argument('--file-structure-sep', help='Separator used in the filename for structuring data (default "_")', default='_')
     parser.add_argument('--exclude-crawl', help='Exclude the given regular expression while crawling')
     parser.add_argument('--include-crawl', help='Include only the given regular expression while  crawling')
-    parser.add_argument('-p', '--port', type=int, help='elastic search port (default 9200)', default=9200)
+    parser.add_argument('-p', '--port', type=int, help='Elastic search port (default 9200)', default=9200)
     parser.add_argument('--host', help='Elastic search host')
     pargs = parser.parse_args(args)
 
@@ -44,9 +44,9 @@ def main(args=sys.argv[1:]):
         include = [re.compile(pargs.include_crawl)]
 
     if pargs.host:
-        es = es_api.ES(es_api.ESFactory.basicConnector(pargs.host, port=pargs.port))
+        es = ESFactory.basicConnector(pargs.host, port=pargs.port)
     elif not pargs.dry_run:
-        es = es_api.ES()
+        es = ESFactory.fromDockerEnvironment()
     else:
         es = None
 
