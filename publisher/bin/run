@@ -2,7 +2,7 @@
 #Description: basic run script for starting the container
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-source $SCRIPT_DIR/helper.sh
+source $SCRIPT_DIR/../helper.sh
 
 image="$(basename $SCRIPT_DIR)"
 
@@ -17,9 +17,9 @@ fullpath2() {
 
 pass=()
 #OPTIONS START
-while getopts 'hdip:P:D:f:s:E:I:' opt; do
+while getopts 'hdip:P:D:f:n:E:I:' opt; do
     case "$opt" in
-        s) search="$OPTARG";;               #pass an elastic search container
+        n) search="$OPTARG";;               #pass an elastic search container
         d) debug=1;;                        #turns debugging on
         i) interactive=1;;                  #starts a shell in the container
         p) script="$OPTARG";;               #runs python script
