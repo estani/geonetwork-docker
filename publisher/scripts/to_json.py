@@ -23,7 +23,7 @@ def main(args=sys.argv[1:]):
     parser.add_argument('--file-structure-sep', help='Separator used in the filename for structuring data (default "_")', default='_')
     parser.add_argument('--exclude-crawl', help='Exclude the given regular expression while crawling')
     parser.add_argument('--include-crawl', help='Include only the given regular expression while  crawling')
-    parser.add_argument('-p', '--port', type=int, help='elastic search port (default 9200)', default=9200)
+    parser.add_argument('-p', '--port', type=int, help='Elastic search port (default 9200)', default=9200)
     parser.add_argument('--host', help='Elastic search host')
     pargs = parser.parse_args(args)
 

@@ -1,9 +1,19 @@
 #!/bin/bash
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-source $SCRIPT_DIR/helper.sh
+source $SCRIPT_DIR/../helper.sh
 
 #remove last param
-array=( "$@" )
+array=( )
+while [[ "$1" ]]; do
+    case "$1" in
+        -n) container="$2"  #container holding an elastic search for deployment
+            shift 2
+            continue
+            ;;
+    esac
+    array+=( "$1" )
+    shift
+done
 last_arg=${array[${#array[@]}-1]}
 unset array[${#array[@]}-1]
 
@@ -26,4 +36,7 @@ if [[ "$data" ]]; then
    [[ -z "$target" ]] && target=/data
 fi
 
-docker run --rm  $options $image /scripts/to_json.py --show --dry-run "$@" "$target"
+if [[ "$container" ]]; then
+    options="$options --link $container:es"
+fi
+docker run --rm  $options $image /scripts/to_json.py "$@" "$target"
