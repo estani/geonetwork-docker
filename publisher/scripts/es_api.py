@@ -53,3 +53,6 @@ class ES(object):
 
     def search(self, body, **options):
         return self.es.search(index=ES.INDEX, doc_type=ES.FILE_TYPE, body=body, **options)
+    
+    def basicSearch(self, query_string):
+        return self.search(body=dict(query=dict(query_string=dict(query=query_string))))
