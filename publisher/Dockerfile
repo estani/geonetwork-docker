@@ -57,7 +57,6 @@ RUN pip install elasticsearch
 
 #prepare env
 ADD env /env
-RUN source /env/bashrc
 
 #prepare the scripts
 ADD scripts /scripts
