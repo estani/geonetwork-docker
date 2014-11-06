@@ -19,7 +19,7 @@ class ESFactory(object):
             elif parts[-1] == 'PORT':
                 server['port'] = int(os.environ[var_name])
         
-        return Elasticsearch(servers.values())
+        return ES(Elasticsearch(servers.values()))
 
     @staticmethod
     def basicConnector(host, port=9200, url_prefix='', use_ssl=False, timeout=10, **other_options):
@@ -27,17 +27,15 @@ class ESFactory(object):
         options = dict(host=host, port=port, url_prefix=url_prefix, use_ssl=use_ssl, timeout=timeout)
         options.update(other_options)
     
-        return Elasticsearch([options])
+        return ES(Elasticsearch([options]))
 
 class ES(object):
     INDEX = 'geonetwork'
     FILE_TYPE = 'file'
 
-    def __init__(self, connector = None):
-        if connector is None:
-            self.es = ESFactory.fromDockerEnvironment()
-        else:
-            self.es = connector
+    def __init__(self, connector):
+        self.es = connector
+
     def getId(self, data):
         "Extract an id for the given data"
         if 'original_path' in data:
