@@ -1,6 +1,6 @@
 #!/bin/bash
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-source $SCRIPT_DIR/helper.sh
+source $SCRIPT_DIR/../helper.sh
 
 #remove last param
 array=( )
