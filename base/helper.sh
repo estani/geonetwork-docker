@@ -1,4 +1,5 @@
 #!/bin/bash
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 image="$(basename $SCRIPT_DIR)"
 
 usage() {
@@ -20,3 +21,6 @@ fullpath() {
     fi
 }
 
+image_name() {
+    echo ${1:-"$(basename $SCRIPT_DIR)"}
+}
