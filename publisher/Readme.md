@@ -114,3 +114,16 @@ As usual you can get an into the container itself by running it interactively:
 ./run -i -D .
 ```
 The `-D` flag is sharing the given directory and mounting it in /data inside the container.
+
+
+query
+-----
+
+Used for searching in elastic search. Be warned that this script runs within a container,
+i.e. the network you see is not the same this container will see.
+
+Usage similar to nc2es. Here an example:
+```bash
+bin/query -n t1 -q '*:*'
+```
+Searchs for all documents in the t1 container.
