@@ -55,20 +55,12 @@ RUN git clone https://github.com/Unidata/netcdf4-python.git && \
 #connection to elasticseearch
 RUN pip install elasticsearch
 
+#prepare env
+ADD env /env
+RUN source /env/bashrc
+
 #prepare the scripts
 ADD scripts /scripts
-#ADD scripts/to_json.py /scripts/to_json.py
-#ADD scripts/to_geonetwork.py /scripts/to_geonetwork.py
-
-#experimenting with xinet.d
-#RUN apt-get -y install xinetd && \
-#    echo "container\t10101/tcp" >>/etc/services 
-
-#ADD xinetd.d/container /etc/xinetd.d/container
-#ADD container/controller /container/controller
-#ADD container/controller.d/start /container/controller.d/start
-#ADD container/controller.d/stop /container/controller.d/stop
-#ADD container/boot /container/boot
 
 #ENV CONTAINER_DATA /container_data
 
