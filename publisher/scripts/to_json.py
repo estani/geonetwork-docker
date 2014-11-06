@@ -4,7 +4,7 @@ import sys, os
 import json
 
 from publisher import SimplePathParser, NetCDFFileHandler
-import es_api
+from es_api import ESFactory
 
 def process(meta, elasticsearch, show=True):
     if show:
@@ -44,9 +44,9 @@ def main(args=sys.argv[1:]):
         include = [re.compile(pargs.include_crawl)]
 
     if pargs.host:
-        es = es_api.ES(es_api.ESFactory.basicConnector(pargs.host, port=pargs.port))
+        es = ESFactory.basicConnector(pargs.host, port=pargs.port)
     elif not pargs.dry_run:
-        es = es_api.ES()
+        es = ESFactory.fromDockerEnvironment()
     else:
         es = None
 
