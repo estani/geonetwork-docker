@@ -23,12 +23,12 @@ class SimplePathParser(object):
                 position += 1
         return metadict
 
-    def __init__(self, dir_structure='', dir_sep=os.sep, file_structure=None, file_sep='_'):
+    def __init__(self, dir_structure=None, dir_sep=os.sep, file_structure=None, file_sep='_'):
         """The separators are used for splitting the directory and file parts. 
         In the case of directories is only used for parsing the structure, the real separator will be
         read from the OS."""
         self.file_sep = file_sep
-        if len(dir_structure) > 0 and dir_structure[0] != '/':
+        if dir_structure and dir_structure[0] != '/':
             dir_structure = '/' + dir_structure 
         self.dir_metadict = SimplePathParser.parse_structure(dir_structure, dir_sep)
         self.file_metadict = SimplePathParser.parse_structure(file_structure, file_sep)
