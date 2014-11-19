@@ -5,10 +5,16 @@ import json
 
 from publisher import SimplePathParser, NetCDFFileHandler
 from es_api import ESFactory
+class SetEncoder(json.JSONEncoder):
+    def default(self, obj):
+        try:
+            return json.JSONEncoder.default(self, obj)
+        except:
+            return str(obj)
 
 def process(meta, elasticsearch, show=True):
     if show:
-        print json.dumps(meta, indent=2)
+        print json.dumps(meta, indent=2, cls=SetEncoder)
     if elasticsearch:
         elasticsearch.publish(meta)
 
@@ -24,7 +30,9 @@ def main(args=sys.argv[1:]):
     parser.add_argument('--exclude-crawl', help='Exclude the given regular expression while crawling')
     parser.add_argument('--include-crawl', help='Include only the given regular expression while  crawling')
     parser.add_argument('-p', '--port', type=int, help='Elastic search port (default 9200)', default=9200)
+    parser.add_argument('--dump', help='Directory where json will get dumped')
     parser.add_argument('--host', help='Elastic search host')
+
     pargs = parser.parse_args(args)
 
     #handle input properly
