@@ -13,10 +13,11 @@ class SetEncoder(json.JSONEncoder):
             return str(obj)
 
 def process(meta, elasticsearch, show=True):
+    meta_json = json.dumps(meta, indent=2, cls=SetEncoder) 
     if show:
-        print json.dumps(meta, indent=2, cls=SetEncoder)
+        print meta_json
     if elasticsearch:
-        elasticsearch.publish(meta)
+        elasticsearch.publish(json.loads(meta))
 
 def main(args=sys.argv[1:]):
     import argparse
