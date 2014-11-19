@@ -17,7 +17,7 @@ def process(meta, elasticsearch, show=True):
     if show:
         print meta_json
     if elasticsearch:
-        elasticsearch.publish(json.loads(meta))
+        elasticsearch.publish(json.loads(meta_json))
 
 def main(args=sys.argv[1:]):
     import argparse
