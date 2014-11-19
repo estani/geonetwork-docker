@@ -22,8 +22,10 @@ Architecture
 
 For containers meant to be run as daemons, there will be a xinetd installed which will listen to some port (default 10101) which in turn
 starts a command handler passing commands to underlying scripts.
+
 This construct is meant to be reused, so by adding a simple stop.sh script in *image*/container/controller.d which takes care of shutting down
 the container in some proper manner, you'll be able to properly shut down the container from your host by issuing:
+
 ```bash
 nc $ip 10101 <<<stop
 ```
@@ -34,5 +36,5 @@ This is only one example. You may develop any other script that can be called fr
 Implementations
 ---------------
 
-[search](search/Readme.md): elastic-search container
-[publisher](publisher/Readme.md): meta-data extractor which writes NetCDF files metadata to json and can send it directly to an elastic-search instance
+* [search](search/Readme.md): elastic-search container
+* [publisher](publisher/Readme.md): meta-data extractor which writes NetCDF files metadata to json and can send it directly to an elastic-search instance
