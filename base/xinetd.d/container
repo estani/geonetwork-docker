@@ -1,5 +1,5 @@
 # default: on
-# description: Hello World socket server
+# description: Basic container controller
 service container
 {
    port            = 10101
