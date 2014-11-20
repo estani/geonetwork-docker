@@ -221,4 +221,5 @@ c6cac5a5b008        search:latest       "/container/boot"   About an hour ago   
 	
 		"original_path": "/workbench/publisher/claire_src/thetao_Omon_ACCESS1-0_historical_r1i1p1_200001-200412.nc",
 		
-	One thing to notice is the --dir-structure /*/model and the actual directory structure that is used when publishing /workbench/publisher/claire_src.  It will use the second token in the path as the value for "model" in the metadata.
+	One thing to notice is the --dir-structure /*/model and the actual directory structure that is used when publishing /workbench/publisher/claire_src.  It will use the second token in the absolute path as the value for "model" in the metadata.
+	
