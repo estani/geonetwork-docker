@@ -18,8 +18,8 @@ ENV PATH /opt/java/jdk1.7.0_67/bin:$PATH
 ENV JAVA_HOME /opt/java/jdk1.7.0_67
 
 #install elasticsearch
-RUN curl https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-1.3.4.tar.gz | tar xzv
-RUN mv /elasticsearch-1.3.4 /elasticsearch
+RUN curl https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-1.4.1.tar.gz | tar xzv
+RUN mv /elasticsearch-1.4.1 /elasticsearch
 
 #experimenting with xinet.d
 RUN apt-get -y install xinetd && \
