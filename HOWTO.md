@@ -32,6 +32,25 @@ f448e9aee233        search:latest       "/container/boot"   About an hour ago   
 c6cac5a5b008        search:latest       "/container/boot"   About an hour ago   Up About an hour    9200/tcp, 9300/tcp, 10101/tcp   test1
 </pre>		
 	
+* Verify that the search nodes have found eachother and formed a __cluster__
+
+    <pre>
+    % curl http://$(search/info -n test1 ip):9200/_cluster/health?pretty=true
+{
+  "cluster_name" : "elasticsearch",
+  "status" : "green",
+  "timed_out" : false,
+  "number_of_nodes" : 6,
+  "number_of_data_nodes" : 6,
+  "active_primary_shards" : 5,
+  "active_shards" : 10,
+  "relocating_shards" : 0,
+  "initializing_shards" : 0,
+  "unassigned_shards" : 0
+}
+	</pre>
+
+
 * Engage up the __publisher__
 
 	Note: publisher containers live only for as long as the publication process.  They do not run as long lived processes like search (index) nodes.
