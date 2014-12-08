@@ -50,6 +50,7 @@ class SimplePathParser(object):
 class NetCDFFileHandler(object):
     CONTAINER_DATA_DIR = '/data/'
     HOST_DATA_DIR_VAR = 'DATA_PATH'
+    EXTRA = '__extra'
 
     def __init__(self, path_parser = None):
         self.path_parser = path_parser
@@ -64,7 +65,7 @@ class NetCDFFileHandler(object):
             meta = self.path_parser.extract(realpath)
         else:
             meta = {}
-        meta['original_path'] = realpath
+        meta[NetCDFFileHandler.EXTRA] = dict(original_path = realpath)
         return meta
         
     def __extract_variable(self, netcdfVar):

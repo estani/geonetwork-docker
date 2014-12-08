@@ -32,14 +32,16 @@ class ESFactory(object):
 class ES(object):
     INDEX = 'geonetwork'
     FILE_TYPE = 'file'
+    EXTRA = '__extra'
+
 
     def __init__(self, connector):
         self.es = connector
 
     def getId(self, data):
         "Extract an id for the given data"
-        if 'original_path' in data:
-            return data['original_path']
+        if 'original_path' in data.get(ES.EXTRA, {}):
+            return data[ES.EXTRA]['original_path']
         else:
             return None
               
@@ -47,12 +49,12 @@ class ES(object):
         "publish the dictionary in values to elastic search"
         return self.es.index(index=ES.INDEX, doc_type=ES.FILE_TYPE, id=self.getId(values), body=values)
 
-    def get(self, id):
+    def get(self, id, **options):
         "Get the document for the given id"
-        return self.es.get(index=ES.INDEX, doc_type=ES.FILE_TYPE, id=id)
+        return self.es.get(index=ES.INDEX, doc_type=ES.FILE_TYPE, id=id, **options)
 
     def search(self, body, **options):
         return self.es.search(index=ES.INDEX, doc_type=ES.FILE_TYPE, body=body, **options)
     
-    def basicSearch(self, query_string):
-        return self.search(body=dict(query=dict(query_string=dict(query=query_string))))
+    def basicSearch(self, query_string, **options):
+        return self.search(body=dict(query=dict(query_string=dict(query=query_string))), **options)
